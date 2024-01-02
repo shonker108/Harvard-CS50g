@@ -105,14 +105,10 @@ function love.update(dt)
         end
 
         -- Score control
-        if player1.score == 10 then
+        if player1.score == 10 or player2.score == 10 then
             player1.score = 0
-            gameState = 'end'
-            playerServing = 1
-        elseif player2.score == 10 then
             player2.score = 0
             gameState = 'end'
-            playerServing = 2
         end
     
         player1:update(dt)
