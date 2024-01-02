@@ -68,9 +68,11 @@ function love.update(dt)
     if ball:collides(player1) then
         ball.x = ball.x + 10
         ball.dx = -ball.dx * 1.05
+        ball.dy = -math.random(ball.dy - 30, ball.dy + 30)
     elseif ball:collides(player2) then
         ball.x = ball.x - 10
         ball.dx = -ball.dx * 1.05
+        ball.dy = -math.random(ball.dy - 30, ball.dy + 30)
     end
 
     -- Left and Right bounds logic
