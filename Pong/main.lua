@@ -31,6 +31,13 @@ function love.load()
         }
     )
 
+    sounds = {
+        ['paddle'] = love.audio.newSource('paddle.wav', 'static'),
+        ['wall'] = love.audio.newSource('wall.wav', 'static'),
+        ['win'] = love.audio.newSource('win.wav', 'static'),
+        ['goal'] = love.audio.newSource('goal.wav', 'static')
+    }
+
     font = love.graphics.newFont('font.ttf')
     love.graphics.setFont(font, 60)
 
@@ -39,7 +46,7 @@ function love.load()
 
     player1 = Paddle(10, VIRTUAL_HEIGHT / 2, 15, 65)
     player2 = Paddle(VIRTUAL_WIDTH - 30 - 10, VIRTUAL_HEIGHT / 2, 15, 65)
-    ball = Ball(VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 2, 15, 15)
+    ball = Ball(VIRTUAL_WIDTH / 2 - 15 / 2, VIRTUAL_HEIGHT / 2 - 15 / 2, 15, 15)
 end
 
 function love.update(dt)
@@ -70,10 +77,12 @@ function love.update(dt)
         
         -- Logic of the ball collision with paddles
         if ball:collides(player1) then
+            sounds['paddle']:play()
             ball.x = ball.x + 10
             ball.dx = -ball.dx * 1.05
             ball.dy = math.random(ball.dy - 30, ball.dy + 30)
         elseif ball:collides(player2) then
+            sounds['paddle']:play()
             ball.x = ball.x - 10
             ball.dx = -ball.dx * 1.05
             ball.dy = math.random(ball.dy - 30, ball.dy + 30)
@@ -81,12 +90,14 @@ function love.update(dt)
     
         -- Left and Right bounds logic
         if ball.x < 0 then
+            sounds['goal']:play()
             gameState = 'serving'
             ball:reset()
             ball.dx = math.random(-200, -300)
             playerServing = 2
             player2.score = player2.score + 1
         elseif ball.x + ball.width > VIRTUAL_WIDTH then
+            sounds['goal']:play()
             gameState = 'serving'
             ball:reset()
             ball.dx = math.random(200, 300)
@@ -96,6 +107,7 @@ function love.update(dt)
     
         -- Wall bounds logic
         if ball.y < 0 or ball.y + ball.height > VIRTUAL_HEIGHT then
+            sounds['wall']:play()
             ball.dy = -math.random(ball.dy - 50, ball.dy + 50)
         end
     
@@ -106,6 +118,7 @@ function love.update(dt)
 
         -- Score control
         if player1.score == 10 or player2.score == 10 then
+            sounds['win']:play()
             player1.score = 0
             player2.score = 0
             gameState = 'end'
@@ -167,7 +180,7 @@ function love.draw()
                 love.graphics.printf(
                     'AI: Enabled',
                     0,
-                    VIRTUAL_HEIGHT / 4,
+                    VIRTUAL_HEIGHT - VIRTUAL_HEIGHT / 4,
                     VIRTUAL_WIDTH,
                     'center'
                 )
@@ -175,7 +188,7 @@ function love.draw()
                 love.graphics.printf(
                     'AI: Disabled',
                     0,
-                    VIRTUAL_HEIGHT / 4,
+                    VIRTUAL_HEIGHT - VIRTUAL_HEIGHT / 4,
                     VIRTUAL_WIDTH,
                     'center'
                 )
@@ -184,7 +197,7 @@ function love.draw()
             love.graphics.printf(
                 'Serving Player ' .. tostring(playerServing),
                 0,
-                VIRTUAL_HEIGHT - VIRTUAL_HEIGHT / 5,
+                VIRTUAL_HEIGHT - VIRTUAL_HEIGHT / 4,
                 VIRTUAL_WIDTH,
                 'center'
             )
