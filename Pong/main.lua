@@ -8,7 +8,7 @@ push = require 'push'
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
-VIRTUAL_WIDTH = 450
+VIRTUAL_WIDTH = 550
 VIRTUAL_HEIGHT = 450
 
 SEPARATORS_COUNT = 7
@@ -42,6 +42,7 @@ end
 function love.update(dt)
     love.window.setTitle('FPS: '..tostring(getFPS()) .. ' Ball DX: ' .. tostring(ball.dx) .. ' Ball DY: ' .. tostring(ball.dy))
  
+    -- Player 1 control logic
     if love.keyboard.isDown('w') then
         player1.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('s') then
@@ -50,6 +51,7 @@ function love.update(dt)
         player1.dy = 0
     end
     
+    -- Player 2 control logic. TODO: change AI behaviour
     if (USE_AI) then
         player2.y = ball.y / 2 > player2.y / 2 and player2.y + (ball.y - player2.y) or player2.y - (player2.y - ball.y)
     else
@@ -62,7 +64,7 @@ function love.update(dt)
         end
     end
     
-    
+    -- Logic of the ball collision with paddles
     if ball:collides(player1) then
         ball.x = ball.x + 10
         ball.dx = -ball.dx * 1.05
@@ -71,6 +73,7 @@ function love.update(dt)
         ball.dx = -ball.dx * 1.05
     end
 
+    -- Left and Right bounds logic
     if ball.x < 0 then
         ball:reset()
         player2.score = player2.score + 1
@@ -79,11 +82,12 @@ function love.update(dt)
         player1.score = player1.score + 1
     end
 
+    -- Wall bounds logic
     if ball.y < 0 or ball.y + ball.height > VIRTUAL_HEIGHT then
-        ball.dy = -ball.dy
-        ball.renderState = -ball.renderState
+        ball.dy = -math.random(ball.dy - 50, ball.dy + 50)
     end
 
+    -- Speed control
     if ball.dx > 1000 then
         ball.dx = ball.dx / 2
     end
